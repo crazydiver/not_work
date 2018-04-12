@@ -1,0 +1,65 @@
+type mas = array of longint;
+procedure vvod(var n:longint; var num:mas);
+var
+  i:longint;
+begin
+//  readln(n);
+  setlength(num,n);
+  for i:=0 to num.Length-1 do
+    read(num[i]);
+end;
+procedure quicksort(a, b : longint; var num, o1 : mas);
+var
+  m, k, c, el, temp : longint;
+begin
+  m := a;
+  k := b;
+  c := num[(m+k) div 2];
+  repeat
+    while num[m] > c do
+      m += 1;
+    while num[k] < c do 
+      k -= 1;
+    if m <= k then
+      begin
+        if num[m] <> num[k] then 
+          begin
+            el := num[m]; temp := o1[m];
+            num[m] := num[k]; o1[m] := o1[k];
+            num[k] := el; o1[k] := temp;
+          end;
+        m += 1;
+        k -= 1;
+      end;
+  until m > k;
+  if a < k then
+    quicksort(a,k,num, o1);
+  if m < b then
+    quicksort(m,b,num, o1);
+end;
+procedure vyvod(num:mas);
+begin
+  for var i := 0 to num.length-1 do
+    write(num[i],' ');
+//  writeln(num[(num.Length-1) div 2]);
+end;
+var
+  sum, temp, i1 : mas;
+  n, i : longint;
+begin
+  n := 3;
+  vvod(n, i1);
+  setlength(sum,n);
+  setlength(temp,n);
+  for i := 0 to n-1 do
+    temp[i] := i1[i];
+  writeln(i1,sum,temp);
+  for i := 0 to temp.Length-1 do
+    repeat
+      sum[i] += temp[i] mod 10;
+      temp[i] := temp[i] div 10;
+    until temp[i] = 0;
+  writeln(i1,sum,temp);
+  quicksort(0,n-1,sum,i1);
+  vyvod(i1);
+end.
