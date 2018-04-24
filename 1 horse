@@ -1,0 +1,64 @@
+type
+  mas = array [1..400] of longint;
+
+procedure Enter (var N, Xfr, Yfr, Xto, Yto :longint);
+begin
+  readln (N);
+  readln (Xfr, Yfr);
+  readln (Xto, Yto);
+end;
+
+procedure step (var A :mas; dist, Pos, HPos :longint; var flag :boolean);
+begin
+  if A[Pos]=0 then
+    begin
+      A[Pos]:=dist;
+      flag:= (Pos<>HPos) and flag;
+    end;
+end;
+
+procedure findWay (N, Xfr, Yfr, Xto, Yto :longint);
+var
+  A :mas; i, dist, HPos :longint; flag :boolean;
+begin
+  dist := 1;
+  HPos := Xfr+(Yfr-1)*N; 
+  A[Xto+(Yto-1)*N] := 1;
+  flag := true;
+  while flag do
+    begin
+      dist += 1;
+      for i:=1 to N*N do
+        if A[i]=(dist-1) then
+          begin
+            if (i>(2*N))         and    ((i mod N)<>0)                then step (A, dist, i-2*N+1, HPos, flag);
+            if (i>N)             and    (((i-1) mod N +2)<N)          then step (A, dist, i-N+2,   HPos, flag);
+            if ((i+N)<=(N*N))    and    (((i-1) mod N +2)<N)          then step (A, dist, i+N+2,   HPos, flag);
+            if ((i+2*N)<=(N*N))  and    ((i mod N)<>0)                then step (A, dist, i+2*N+1, HPos, flag);
+            if ((i+2*N)<=(N*N))  and    ((i mod N)<>1)                then step (A, dist, i+2*N-1, HPos, flag);
+            if ((i+N)<=(N*N))    and    (((i-1) mod N +1)>2)          then step (A, dist, i+N-2,   HPos, flag);
+            if (i>N)             and    (((i-1) mod N +1)>2)          then step (A, dist, i-N-2,   HPos, flag);
+            if (i>(2*N))         and    ((i mod N)<>1)                then step (A, dist, i-2*N-1, HPos, flag);
+          end;
+    end;
+  writeln (dist-1);
+  for i:=dist downto 1 do
+    begin
+      writeln ((HPos-1) mod N +1, ' ', (HPos-1) div N +1);
+      if (HPos>(2*N))         and    ((HPos mod N)<>0)          and  (A[HPos-2*N+1]=(i-1))      then  HPos:=HPos-2*N+1   else
+      if (HPos>N)             and    (((HPos-1) mod N +2)<N)    and  (A[HPos-N+2]=(i-1))        then  HPos:=HPos-N+2     else
+      if ((HPos+N)<=(N*N))    and    (((HPos-1) mod N +2)<N)    and  (A[HPos+N+2]=(i-1))        then  HPos:=HPos+N+2     else
+      if ((HPos+2*N)<=(N*N))  and    ((HPos mod N)<>0)          and  (A[HPos+2*N+1]=(i-1))      then  HPos:=HPos+2*N+1   else
+      if ((HPos+2*N)<=(N*N))  and    ((HPos mod N)<>1)          and  (A[HPos+2*N-1]=(i-1))      then  HPos:=HPos+2*N-1   else
+      if ((HPos+N)<=(N*N))    and    (((HPos-1) mod N +1)>2)    and  (A[HPos+N-2]=(i-1))        then  HPos:=HPos+N-2     else
+      if (HPos>N)             and    (((HPos-1) mod N +1)>2)    and  (A[HPos-N-2]=(i-1))        then  HPos:=HPos-N-2     else
+      if (HPos>(2*N))         and    ((HPos mod N)<>1)          and  (A[HPos-2*N-1]=(i-1))      then  HPos:=HPos-2*N-1;
+    end;
+end;
+
+var
+  N, Xfr, Yfr, Xto, Yto :longint;
+begin
+  Enter (N, Xfr, Yfr, Xto, Yto);
+  findWay (N, Xfr, Yfr, Xto, Yto);
+end.
