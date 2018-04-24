@@ -1,0 +1,84 @@
+type
+  Mas = array [1..10000] of integer;
+  
+procedure Enter (var A :mas; var StrAmm, ColAmm :longint);
+var
+  i:longint;
+begin
+  readln (StrAmm, ColAmm);
+  for i:=1 to StrAmm*ColAmm do
+    read (A[i]);
+end;
+
+procedure FindWay (A :mas; StrAmm, ColAmm :longint; var InclineAmm :longint);
+var
+  head, i :longint; flag :boolean;
+begin
+  
+  A[1] := -1;
+  InclineAmm := -1;
+  flag := true;
+  while flag do
+    begin
+      InclineAmm -= 1;
+      for i:=1 to StrAmm*ColAmm do
+        if A[i]=(InclineAmm+1) then
+          begin
+            head := i;
+            while ((head mod ColAmm)>0) and (A[head+1]<=0) do
+              Head += 1;
+            if (head<0) or (Head>(ColAmm*StrAmm)) then
+              begin
+                writeln ('Error');
+                exit;
+              end;
+            if A[head]=0 then
+              A[head]:=InclineAmm;
+            if ((head mod ColAmm)>0) and (A[head+1]=2) then
+              flag:=false;
+              
+            head := i;
+            while ((head mod ColAmm)<>1) and (A[head-1]<=0) do
+              Head -= 1;
+            if (head<0) or (Head>(ColAmm*StrAmm)) then
+              begin
+                writeln ('Error');
+                exit;
+              end;
+            if A[head]=0 then
+              A[head]:=InclineAmm;
+            if ((head mod ColAmm)<>1) and (A[head-1]=2) then
+              flag:=false;
+              
+            head := i;
+            while ((Head+ColAmm)<=(StrAmm*ColAmm)) and (A[head+ColAmm]<=0) do
+              Head += ColAmm;
+            if (head<0) or (Head>(ColAmm*StrAmm)) then
+              begin
+                writeln ('Error');
+                exit;
+              end;
+            if A[head]=0 then
+              A[head]:=InclineAmm;
+            if ((Head+ColAmm)<=(StrAmm*ColAmm)) and (A[head+ColAmm]=2) then
+              flag:=false;
+              
+            head := i;
+            while (head>ColAmm) and (A[head-ColAmm]<=0) do
+              Head -= ColAmm;
+            if A[head]=0 then
+              A[head]:=InclineAmm;
+            if (head>ColAmm) and (A[head-ColAmm]=2) then
+              flag:=false;
+          end;
+    end;
+  InclineAmm := -InclineAmm-1;
+end;
+
+var
+  A :mas; StrAmm, ColAmm, InclineAmm :longint;
+begin
+  Enter (A, strAmm, ColAmm);
+  FindWay (A, StrAmm, ColAmm, InclineAmm);
+  writeln (InclineAmm);
+end.
