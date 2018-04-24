@@ -1,0 +1,127 @@
+const
+  CellAmm = 1000000;
+type
+  Mas = array [1..CellAmm] of longint;
+  MiniMas = array [1..10000] of longint;
+
+procedure EnterMap (var Map :mas; var strAmm, ColAmm, StPos, DstPos :longint);
+var
+  i, k, StrSt, ColSt, StrDst, ColDst :longint; s :string;
+begin
+  readln (strAmm, ColAmm, StrSt, ColSt, StrDst, ColDst);
+  for i:=1 to strAmm do
+    begin
+      readln (s);
+      for k:=1 to ColAmm do
+        Map[(i-1)*ColAmm+k]:=pos(copy(s, k, 1), '# .W')-2;
+    end;
+  StPos  := (StrSt-1)*ColAmm+ColSt;
+  DstPos := (StrDst-1)*ColAmm+ColDst;
+end;
+
+procedure step (var A :mas; const Map :mas; const PrevPos, Pos, DstPos :longint; var flag, Arrd :boolean; var StepsAmm :longint; var Steps :minimas);
+begin
+  if (Map[Pos]<>-1) and ((A[Pos]=0) or (A[Pos]>(A[PrevPos]+Map[Pos]))) then
+    begin
+      A[Pos] := A[PrevPos]+Map[Pos];
+      StepsAmm+=1;
+      Steps[StepsAmm]:=Pos;
+      flag := true;
+    end;
+  if Pos=DstPos then
+    Arrd := true;
+end;
+
+procedure ChooseDir (const A :mas; var dir, head :longint; N, E, S, W, StrAmm, ColAmm :longint);
+var
+  min :longint;
+begin
+  min := -1;
+  if (N>0) and (A[N]>0) then 
+    begin
+      Dir:=1;
+      min:=A[N];
+    end;
+  if ((E mod ColAmm) <> 1) and (A[E]>0) and ((A[E]<min) or (min=-1)) then 
+    begin
+      Dir:=2;
+      min:=A[E];
+    end;
+  if (S<=(ColAmm*StrAmm)) and (A[S]>0) and ((A[S]<min) or (min=-1)) then 
+    begin
+      Dir:=3;
+      min:=A[S];
+    end;
+  if ((W mod ColAmm) <> 0) and (A[W]>0) and ((A[W]<min) or (min=-1)) then 
+    begin
+      Dir:=4;
+      min:=A[W];
+    end;
+  case dir of
+    1: head -= ColAmm;
+    2: head += 1;
+    3: head += ColAmm;
+    4: head -= 1;
+  end;
+end;
+
+procedure travelling (const Map :mas; const strAmm, ColAmm, StPos, DstPos :longint; var Route :mas; var RouteLth, Time :longint);
+var
+  i, PrevStepsAmm, StepsAmm, Head, dir :longint; Prevsteps, steps :minimas; flag, arrd :boolean; A:mas;
+begin
+  for i:=1 to CellAmm do
+    A[i] := 0; 
+  A[StPos]:=1;
+  PrevStepsAmm:=1;
+  PrevSteps[1]:=StPos;
+  flag := true;
+  ArrD := false;
+  while flag do
+    begin
+      flag := false;
+      StepsAmm:=0;
+      for i:=1 to PrevStepsAmm do
+        begin
+          if (PrevSteps[i] mod ColAmm)<>0              then step (A, Map, PrevSteps[i], PrevSteps[i]+1,      DstPos, flag, Arrd, StepsAmm, Steps);
+          if (PrevSteps[i] mod ColAmm)<>1              then step (A, Map, PrevSteps[i], PrevSteps[i]-1,      DstPos, flag, Arrd, StepsAmm, Steps);
+          if (PrevSteps[i]+ColAmm)<=(ColAmm*StrAmm)    then step (A, Map, PrevSteps[i], PrevSteps[i]+ColAmm, DstPos, flag, Arrd, StepsAmm, Steps);
+          if  PrevSteps[i]>ColAmm                      then step (A, Map, PrevSteps[i], PrevSteps[i]-ColAmm, DstPos, flag, Arrd, StepsAmm, Steps);
+        end;
+      PrevStepsAmm:=StepsAmm;
+      PrevSteps := Steps;
+    end;
+  if Arrd then
+    begin
+      RouteLth:=0;
+      Head := DstPos;
+      while A[head]<>1 do
+        begin
+          RouteLth+=1;
+          ChooseDir (A, dir, head, head-ColAmm, head+1, head+ColAmm, head-1, StrAmm, ColAmm);
+          route[RouteLth]:=Dir;
+        end;
+      time:=A[dstPos]-1;
+    end
+  else
+    begin
+      RouteLth := -1;
+      Time := -1;
+    end;
+end;
+
+procedure SurMaRoute (Route :mas; RouteLth, Time :longint);
+var
+  i :longint;
+begin
+  writeln (Time);
+  for i:=1 to RouteLth do
+    write (copy('NESW', Route[i], 1));
+end;
+
+var
+  Map, Route :mas; strAmm, ColAmm, StPos, DstPos, RouteLth, Time :longint;
+begin
+  EnterMap (Map, strAmm, ColAmm, DstPos, StPos);
+  travelling (Map, strAmm, ColAmm, StPos, DstPos, Route, RouteLth, Time);
+  SurMaRoute (Route, RouteLth, Time);
+end.
