@@ -1,0 +1,59 @@
+type
+  mas = array [1..64] of longint;
+
+procedure Enter (var Gpos, Rpos :longint);
+var
+  s :string;
+begin
+  readln (s);
+  Gpos := pos (copy(s, 1, 1), 'abcdefgh') + (pos (copy(s, 2, 1), '12345678')-1) * 8;
+  Rpos := pos (copy(s, 4, 1), 'abcdefgh') + (pos (copy(s, 5, 1), '12345678')-1) * 8;
+end;
+
+procedure step (var A :mas; dist, Pos :longint; var flag :boolean);
+begin
+  if A[Pos]=0 then
+    begin
+      A[Pos]:=dist;
+      flag:= true;
+    end;
+end;
+
+procedure findWay (Gpos, Rpos :longint; var StAmm :longint);
+var
+  A :mas; dist, i :longint; flag :boolean;
+begin
+  dist := 1;
+  A[Gpos] := 1;
+  flag := true;
+  while flag do
+    begin
+      dist += 1;
+      flag := false;
+      for i:=1 to 64 do
+        if A[i]=(dist-1) then
+          begin
+            if (i>(2*8))         and    ((i mod 8)<>0)                then step (A, dist, i-2*8+1, flag);
+            if (i>8)             and    (((i-1) mod 8 +2)<8)          then step (A, dist, i-8+2,   flag);
+            if ((i+8)<=(8*8))    and    (((i-1) mod 8 +2)<8)          then step (A, dist, i+8+2,   flag);
+            if ((i+2*8)<=(8*8))  and    ((i mod 8)<>0)                then step (A, dist, i+2*8+1, flag);
+            if ((i+2*8)<=(8*8))  and    ((i mod 8)<>1)                then step (A, dist, i+2*8-1, flag);
+            if ((i+8)<=(8*8))    and    (((i-1) mod 8 +1)>2)          then step (A, dist, i+8-2,   flag);
+            if (i>8)             and    (((i-1) mod 8 +1)>2)          then step (A, dist, i-8-2,   flag);
+            if (i>(2*8))         and    ((i mod 8)<>1)                then step (A, dist, i-2*8-1, flag);
+          end;
+    end;
+  if ((A[Rpos]-1) mod 2) = 0 then
+    StAmm := (A[Rpos]-1) div 2
+  else
+    StAmm := -1;
+end;
+
+
+var
+  Gpos, Rpos, stAmm :longint;
+begin
+  Enter (Gpos, Rpos);
+  findWay (Gpos, Rpos, stAmm);
+  writeln (StAmm);
+end.
