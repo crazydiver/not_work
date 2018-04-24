@@ -1,0 +1,73 @@
+type
+  mas = array [1..250000] of longint;
+
+procedure GetIt (var A :mas; var StrAmm, ColAmm :longint);
+var
+  i, chng:longint;
+begin
+  readln (strAmm, ColAmm);
+  for i:=1 to strAmm*ColAmm do
+    begin
+      read (chng);
+      A[i] := -chng;
+    end;
+end;
+
+procedure step (var A :mas; pos, dist :longint; var flag :boolean);
+begin
+  if A[pos]=0 then
+    A[pos]:=dist;
+  if A[pos]=-1 then
+    flag:=false;
+end;
+
+procedure determineDists (var A :mas; StrAmm, ColAmm :longint);
+var
+  dist, i, k :longint; otv, nach :mas; flag :boolean;
+begin
+  nach:=A;
+  for k:=1 to StrAmm*ColAmm do
+    if A[k]=-1 then
+      otv[k]:=0
+    else
+      begin
+        A[k]:=1;
+        dist:=1;
+        flag:=true;
+        while flag do
+          begin
+            dist+=1;
+            for i:=1 to StrAmm*ColAmm do
+              if A[i]=(dist-1) then
+                begin
+                  if (i mod ColAmm)<>0              then step (A, i+1, dist, flag);
+                  if (i mod ColAmm)<>1              then step (A, i-1, dist, flag);
+                  if (i+ColAmm)<=(ColAmm*StrAmm)    then step (A, i+ColAmm, dist, flag);
+                  if i>ColAmm                       then step (A, i-ColAmm, dist, flag);
+                end;
+          end;
+        otv[k]:=dist-1;
+        A:=nach;
+      end;
+  A := otv;
+end;
+
+procedure GiveItToMe (A :mas; StrAmm, ColAmm :longint);
+var
+  i:longint;
+begin
+  for i:=1 to strAmm*ColAmm do
+    begin
+      write (A[i], ' ');
+      if (i mod ColAmm) = 0 then
+        writeln();
+    end;
+end;
+
+var
+  A :mas; StrAmm, ColAmm :longint;
+begin
+  GetIt (A, StrAmm, ColAmm);
+  determineDists (A, StrAmm, ColAmm);
+  GiveItToMe (A, StrAmm, ColAmm);
+end.
